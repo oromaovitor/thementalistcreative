@@ -1,0 +1,149 @@
+@import "tailwindcss";
+
+/* ───────── Paleta e fontes ───────── */
+@theme {
+  --color-ink: #120d0e;        /* fundo principal: preto quente */
+  --color-coal: #1b1415;       /* camadas sobre o fundo */
+  --color-wine: #3d0d14;       /* vinho profundo */
+  --color-bordo: #6b1420;      /* bordô */
+  --color-blood: #9e1b26;      /* tinta vermelha (acento) */
+  --color-gold: #b39062;       /* dourado envelhecido */
+  --color-gold-soft: #d8c09a;
+  --color-paper: #e9dfcb;      /* papel de dossiê */
+  --color-smoke: #9b8f86;      /* texto secundário */
+
+  --font-display: "Bodoni Moda", "Didot", Georgia, serif;
+  --font-body: "Libre Franklin", system-ui, sans-serif;
+  --font-type: "Special Elite", "Courier New", monospace;
+
+  --ease-out-soft: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-move: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+html {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+body {
+  font-family: var(--font-body);
+  background: var(--color-ink);
+  overflow-x: clip;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--color-blood); color: var(--color-paper); }
+
+:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 3px; }
+
+/* Grão de filme por cima de tudo */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: -50%;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 1.2s steps(6) infinite;
+}
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-3%, 2%); }
+  40% { transform: translate(2%, -3%); }
+  60% { transform: translate(-2%, -1%); }
+  80% { transform: translate(3%, 3%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Vinheta de cinema */
+.vignette { background: radial-gradient(120% 90% at 50% 40%, transparent 40%, rgba(0, 0, 0, 0.75) 100%); }
+
+/* Papel envelhecido */
+.paper {
+  background-color: var(--color-paper);
+  color: #2a1d1a;
+  background-image:
+    radial-gradient(120% 80% at 10% 0%, rgba(255, 255, 255, 0.35), transparent 60%),
+    radial-gradient(90% 70% at 100% 100%, rgba(120, 80, 40, 0.18), transparent 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.6' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .25 0 0 0 0 .15 0 0 0 .12 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
+}
+
+/* Revelar ao rolar */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  filter: blur(6px);
+  transition: opacity 0.9s var(--ease-out-soft), transform 0.9s var(--ease-out-soft), filter 0.9s var(--ease-out-soft);
+  transition-delay: var(--d, 0ms);
+}
+.reveal.in { opacity: 1; transform: none; filter: none; }
+
+/* Texto censurado que se "descensura" */
+.redact { position: relative; display: inline; }
+.redact > span {
+  background-image: linear-gradient(#050304, #050304);
+  background-repeat: no-repeat;
+  background-size: 100% 88%;
+  background-position: right center;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition: background-size 0.9s var(--ease-move);
+  transition-delay: var(--d, 0ms);
+  color: transparent;
+}
+.redact.in > span { background-size: 0% 88%; color: inherit; transition: background-size 0.9s var(--ease-move), color 0.2s 0.5s; transition-delay: var(--d, 0ms); }
+
+/* Faixa rolante */
+@keyframes marquee { to { transform: translateX(-50%); } }
+.marquee { animation: marquee 38s linear infinite; }
+
+/* Relógio de bolso */
+@keyframes swing { 0%, 100% { transform: rotate(14deg); } 50% { transform: rotate(-14deg); } }
+.swing { transform-origin: 50% 0; animation: swing 3.2s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+
+/* Desenho de traço */
+.draw path, .draw circle, .draw ellipse { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.draw.in path, .draw.in circle, .draw.in ellipse {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset var(--dur, 2.4s) var(--ease-out-soft);
+  transition-delay: var(--d, 0ms);
+}
+
+/* Gotejar */
+.drip { transform: scaleY(0); transform-origin: top; }
+.in .drip { transform: scaleY(1); transition: transform var(--dur, 2.2s) cubic-bezier(0.6, 0.04, 0.3, 1); transition-delay: var(--d, 1.6s); }
+
+/* Ficha que vira */
+.flip { perspective: 1200px; }
+.flip-inner { transition: transform 0.8s var(--ease-move); transform-style: preserve-3d; }
+.flip.on .flip-inner { transform: rotateY(180deg); }
+.flip-face { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.flip-back { transform: rotateY(180deg); }
+
+/* Glitch de nomes */
+.glitch { position: relative; }
+.glitch.on { animation: shake 0.28s steps(2) 1; color: var(--color-blood); }
+@keyframes shake {
+  0% { transform: translate(0); text-shadow: 2px 0 var(--color-blood), -2px 0 var(--color-gold); }
+  50% { transform: translate(-2px, 1px); text-shadow: -2px 0 var(--color-blood), 2px 0 var(--color-gold); }
+  100% { transform: translate(0); text-shadow: none; }
+}
+
+/* Cursor piscando da leitura fria */
+.caret::after { content: ""; display: inline-block; width: 0.55em; height: 1.05em; margin-left: 2px; vertical-align: -0.15em; background: var(--color-blood); animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* Pulso das tachinhas */
+@keyframes pulse-pin { 0%, 100% { box-shadow: 0 0 0 0 rgba(158, 27, 38, 0.55); } 50% { box-shadow: 0 0 0 8px rgba(158, 27, 38, 0); } }
+
+.press:active { transform: scale(0.97); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; transition-delay: 0ms !important; scroll-behavior: auto !important; }
+  .reveal { opacity: 1; transform: none; filter: none; }
+  .drip { transform: none; }
+  .draw path, .draw circle, .draw ellipse { stroke-dashoffset: 0; }
+  .grain::after { display: none; }
+}
